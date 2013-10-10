@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<!--
+/*
+	Created by: 	Nguyen Si Pham - 723659X
+	Created date:	19/09/2013	
+	Description:	This is the listing page of the BuyOnline system.
+*/ 
+-->
+<head>
+<title>BuyOnline System</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="author" content="Nguyen Si Pham" />
+<meta name="description" content="BuyOnline System" />
+<meta name="keywords" content="Shopping cart, australia" />
+<link rel="stylesheet" href="style.css" type="text/css" />
+<script type="text/javascript" src="buyOnlineScript.js"></script> 
+</head>
+<body onload="login.getLoginDetail()">
+	
+	<!-- Banner Content-->
+	<div class="navbar navbar-inverse navbar-fixed-top">		
+		<div class="navbar-inner">
+			<div class="container-fluid">			
+				<a class="brand" href="buyonline.htm">BuyOnline System</a>			
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						<span id="loginDetail"></span>
+					</p>
+					<ul class="nav">
+					  <li><a href="buyonline.htm">Home</a></li>
+					</ul>
+				</div><!--/.nav-collapse -->			
+			</div>
+		</div>
+	</div>
+	
+	<div class="container-fluid">
+		<div class="row-fluid">
+
+			<!-- Menu Content-->
+			<div class="span3">
+				<div class="well sidebar-nav">
+					<ul class="nav nav-list">						
+						<li><a href="listing.htm">Listing</a></li>			
+						<li><a href="processing.htm">Processing</a></li>
+					</ul>			
+				</div>
+			</div>
+			
+			<div class="span9">
+
+				<!-- Content -->										
+				<script type="text/javascript" src="listing.js"></script> 
+				
+				<div class="span12">		
+			
+					<h4>Add new item</h4>
+					
+					<div class="span3 required">
+						<label for="name">Item Name <em>*</em></label>
+						<input type="text" name="name" id="name" value="" />
+					</div>
+					
+					<div class="span3 required">
+						<label for="price">Item Price <em>*</em></label>
+						<input type="text" name="price" id="price" value="" />
+					</div>
+					
+					<div class="span12"></div>
+						
+					<div class="span3 required">
+						<label for="quantity">Item Quantity <em>*</em></label>
+						<input type="text" name="quantity" id="quantity" value="" />
+					</div>
+						
+					<div class="span3 required">
+						<label for="description">Item Description <em>*</em></label>
+						<textarea name='description' id='description' rows='5' cols='30' class='span10'></textarea>
+					</div>
+								
+					<div class="span12"></div>
+				
+					<div class="span1">
+						<input type="submit" value="Add item" class="btn" onclick="listing.addItem()" />
+					</div>										
+					<div class="span1">
+						<input type="submit" value="Reset" class="btn" onclick="listing.reset()" />
+					</div>										
+				</div>	
+				<div class="span12"></div>
+				<div class="span12" id="info"></div>
+				<!-- /Content -->
+				
+			</div>
+			<div style="clear:both;"></div>
+			<hr>
+			<footer>
+				<div class="span12">@Nguyen Si Pham</div>	
+				<div class="span12">Student ID: 723659X</div>	
+				<div class="span12">managerId: <a href="mailto:723659X@student.swin.edu.au">723659X@student.swin.edu.au</a></div>	
+			</footer>
+		</div><!-- /<div class="row-fluid"> in pageHeaderPartial.php -->
+	</div>
+</body>
+</html>
