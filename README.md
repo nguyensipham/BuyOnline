@@ -8,7 +8,7 @@ Summary of techniques used:
 
 Frontend:
 
-- JavaScript/HTML, DOM and Ajax with XML, XSL
+- JavaScript/HTML, DOM and Ajax with XML/XSLT
 - HTML5 and responsive website design using Bootstrap stylesheet
 - Design patterns: Revealing Module pattern + Revealing Prototype pattern
 
