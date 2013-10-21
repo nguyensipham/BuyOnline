@@ -4,26 +4,22 @@
 var custLogin = function(){
 	//private members
 	var login = function(){
-			var email = document.getElementById("email").value,
-				password = document.getElementById("password").value,
+			var email = encodeURIComponent(document.getElementById("email").value),
+				password = encodeURIComponent(document.getElementById("password").value),
 				method = "POST",
 				sendTo = "login.php", 
 				params = "", 
 				body = "email=" + email + "&password=" + password;
-			dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+			dataService.sendRequest(method, sendTo, params, body, callback);
 		},
 
-		successCallback = function(responseText){
-			window.location = "buying.htm"; // redirect to buying page
-		},
-
-		errorCallback = function(responseText){
-			document.getElementById('info').innerHTML = responseText;						
+		callback = function(xml){			
+			window.location = "buying.htm"; // redirect to buying page			
 		};
 		
 	//public members
 	return{
-		login: login		
+		login: login
 	}
 }();
 

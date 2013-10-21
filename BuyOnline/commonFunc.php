@@ -2,14 +2,14 @@
 /*
 	Created by: 	Nguyen Si Pham - 723659X
 	Created date:	19/09/2013	
-	Description:	This file contains common functions which are used by most pages of the ShipOnline system
+	Description:	This file contains common functions which are used by most pages of the BuyOnline system
 */ 
 ?>
 <?php
 	
-// function to validat manager logins
-function managerLogin($managerId, $password){
-	$filename = "data/manager.txt";
+// function to validate manager logins
+function managerLogin($managerId, $password){	
+	$filename = "../../data/manager.txt";
 	if (file_exists ($filename)) { 
 		$lines = file($filename);		
 		foreach ($lines as $line_num => $line){
@@ -31,7 +31,7 @@ function goodsXmlInit(){
 		
 	// create the xml file goods.xml if not exists
 	global $goodsXmlFileName;
-	$goodsXmlFileName = "data/goods.xml";
+	$goodsXmlFileName = "../../data/goods.xml";
 	if (!file_exists ($goodsXmlFileName)){
 		$fileHandle = fopen ($goodsXmlFileName, "w");				
 		fclose ($fileHandle);
@@ -45,8 +45,8 @@ function goodsXmlInit(){
 		if ($dom->save($goodsXmlFileName)){
 			//save succeeds				
 		} else {
-			//save fails
-			//$HTML = "<p class='text-error'>Error while creating XML file</p>";
+			//save fails			
+			throw new Exception("Error while saving xml file!");
 		}
 	}
 }
@@ -58,7 +58,7 @@ function customerXmlInit(){
 		
 	// create the xml file customer.xml if not exists
 	global $xmlFileName;
-	$xmlFileName = "data/customer.xml";
+	$xmlFileName = "../../data/customer.xml";
 	if (!file_exists ($xmlFileName)){
 		$fileHandle = fopen ($xmlFileName, "w");				
 		fclose ($fileHandle);
@@ -74,7 +74,7 @@ function customerXmlInit(){
 			//save succeeds				
 		} else {
 			//save fails
-			//$HTML = "<p class='text-error'>Error while creating XML file</p>";
+			throw new Exception("Error while saving xml file!");
 		}
 	}
 }
@@ -95,6 +95,11 @@ function isEmail($email){
 	$format = "/^[a-zA-Z0-9]+[a-zA-Z0-9\!\#\$\%\&\'\*\+\-\/\=\?\^\_\`\{\|\}\~\.]*[@][a-zA-Z0-9\-]+([.][a-zA-Z0-9\-]+)+[a-zA-Z0-9]+$/";
 	return preg_match($format, $email);
 	//return filter_var($email, FILTER_VALIDATE_EMAIL);
+}
+
+// Function to convert to XML message to return to client
+function message($msg){
+	return "<message>$msg</message>";
 }
 
 ?>

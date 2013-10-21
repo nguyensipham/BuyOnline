@@ -7,18 +7,24 @@
 ?>
 <?php include("commonFunc.php"); ?>
 <?php	
-	try{
-		//initialize goods.xml connection
-		goodsXmlInit();		
-		
-		header("Content-type: text/xml");
-		$fileContent = file_get_contents($goodsXmlFileName);
-		if ($fileContent)
-			echo $fileContent;
-		else
-			echo null;
-	} catch (Exception $e){
-		header('HTTP/1.0 500 Internal Server Error');
-		$HTML = $e->getMessage();
-	}	
+	$HTML = "";
+	session_start();
+	header("Content-type: text/xml");
+	if (!isset($_SESSION['custid'])){ // Check authorization for customer logins only
+		header('HTTP/1.0 401 Unauthorized');
+		$HTML = "Authorization required.";
+	} else {
+		try{		
+			//initialize goods.xml connection
+			goodsXmlInit();										
+			$fileContent = file_get_contents($goodsXmlFileName);
+			if ($fileContent)
+				echo $fileContent;
+			return;
+		} catch (Exception $e){
+			header('HTTP/1.0 500 Internal Server Error');
+			$HTML = $e->getMessage();
+		}
+	}
+	echo message($HTML);
 ?>

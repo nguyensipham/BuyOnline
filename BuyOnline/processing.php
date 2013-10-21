@@ -2,7 +2,7 @@
 /*
 	Created by: 	Nguyen Si Pham - 723659X
 	Created date:	19/09/2013	
-	Description:	This manages manager processing
+	Description:	This manages manager processing function
 */ 
 ?>
 <?php include("commonFunc.php"); ?>
@@ -15,9 +15,11 @@
 	} 
 		
 	session_start();
+	header("Content-type: text/xml");
 	
 	if (!isset($_SESSION['managerid'])){ // Check authorization for manager logins only
 		header('HTTP/1.0 401 Unauthorized');
+		$HTML = "Authorization required.";
 	}
 	else {	
 		if ($action == "get"){ // get processing items		
@@ -54,7 +56,6 @@
 					$qtySold = $doc->createElement('qtySold', $itemLookup->qtySold); 
 					$item->appendChild($qtySold);
 				}
-				header("Content-type: text/xml");
 				echo $doc->saveXML(); // return serialized XML as a string
 				
 			} catch (Exception $e){
@@ -76,9 +77,9 @@
 					{    
 						$itemLookup->qtySold = 0; 
 					}						
-					$HTML = count($itemsLookup) . " items with sold quantities have been cleared.";
+					$HTML = count($itemsLookup) . " items with sold quantities have been cleared. ";
 				} else {
-					$HTML = "There is no items with non-zero sold quantities.";
+					$HTML = "There is no items with non-zero sold quantities. ";
 				}
 				
 				//remove items completely sold
@@ -89,7 +90,7 @@
 						$dom = dom_import_simplexml($itemLookup); // convert to DOMElement object from SimpleXMLElement object
 						$dom->parentNode->removeChild($dom);
 					}	
-					$HTML .= "<br/>" . count($itemsLookup) . " completely sold items have been removed.";
+					$HTML .= count($itemsLookup) . " completely sold items have been removed.";
 				}
 				
 				$xml->asXml($goodsXmlFileName); // save xml file
@@ -100,9 +101,10 @@
 		} 
 		else{
 			header('HTTP/1.0 400 Bad Request');	// bad request for invalid actions apart from "get" and "process"
+			$HTML = "Invalid action in query string.";
 		}			
 		
 		if ($HTML != "")		
-			echo $HTML; // return the HTML message if not blank
+			echo message($HTML); // return the HTML message if not blank
 	}	
 ?>

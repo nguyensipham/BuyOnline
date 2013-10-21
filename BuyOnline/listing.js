@@ -4,20 +4,20 @@
 var listing = function(){
 	//private members
 	var	addItem = function(){
-			var name = document.getElementById("name").value,
-				price = document.getElementById("price").value,
-				quantity = document.getElementById("quantity").value,
-				description = document.getElementById("description").value,
+			var name = encodeURIComponent(document.getElementById("name").value),
+				price = encodeURIComponent(document.getElementById("price").value),
+				quantity = encodeURIComponent(document.getElementById("quantity").value),
+				description = encodeURIComponent(document.getElementById("description").value),
 				method = "POST",
 				sendTo = "listing.php", 
 				params = "", 
 				body = "name=" + name + "&price=" + price + "&quantity=" + quantity + "&description=" + description, 
 				callback = addItemCallback;
-			dataService.sendRequest(method, sendTo, params, body, callback, callback);
+			dataService.sendRequest(method, sendTo, params, body, callback);
 		},
 
-		addItemCallback = function(responseText){
-			document.getElementById('info').innerHTML = responseText;
+		addItemCallback = function(xml){
+			message.showSuccessMessage(xml);
 		},
 
 		reset = function(){

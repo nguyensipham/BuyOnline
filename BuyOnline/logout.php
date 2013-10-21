@@ -1,15 +1,23 @@
+<?php 
+/*
+	Created by: 	Nguyen Si Pham - 723659X
+	Created date:	19/09/2013	
+	Description:	Logout function
+*/ 
+?>
 <?php
 	include("cart.php");
 	
 	$loggedInId = "";
 	session_start();
+	header("Content-type: text/xml");
 	if (isset($_SESSION["Cart"])){ // clear the cart if exists			
 		$myCart = $_SESSION["Cart"]; // assign the session variable to $myCart		
 		$cart = Cart::Instance(); //get a Cart singleton instance
 		try{
 			$cart->cancel($myCart);			
 		} catch (Exception $e){
-			header('HTTP/1.0 400 Bad Request');
+			header('HTTP/1.0 500 Internal Server Error');
 			$HTML = $e->getMessage();
 		}	
 	}
@@ -27,5 +35,5 @@
 	// Delete the current session
 	$_SESSION = array();
 	session_destroy();		
-	echo $HTML;
+	echo message($HTML);
 ?>

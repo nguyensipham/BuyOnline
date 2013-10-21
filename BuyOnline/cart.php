@@ -156,18 +156,18 @@
 		* @return XML string
 		*/
 		public function toXml($aCart)
-		{   			
-			if (is_array($aCart)){
-				$doc = new DOMDocument('1.0', 'iso-8859-1');
-				$cart = $doc->createElement('cart');
-				$doc->appendChild($cart);
+		{   	
+			$doc = new DOMDocument('1.0', 'iso-8859-1');
+			$cart = $doc->createElement('cart');
+			$doc->appendChild($cart);
+			if (is_array($aCart)){				
 				foreach ($aCart as $itemIdValue => $qtyValue)
 				{    
 					if ($qtyValue > 0){
 						$item = $doc->createElement('item');
 						$cart->appendChild($item);
 						
-						$itemId = $doc->createElement('itemId', $itemIdValue); 
+						$itemId = $doc->createElement('itemid', $itemIdValue); 
 						$item->appendChild($itemId); 
 						
 						$itemPrice = $this->xml->xpath("//item[itemid='$itemIdValue']/price/text()");		
@@ -176,11 +176,13 @@
 						
 						$quantity = $doc->createElement('quantity', $qtyValue); 
 						$item->appendChild($quantity);
+						
+						$subtotal = $doc->createElement('subtotal', $itemPrice[0] * $qtyValue); 
+						$item->appendChild($subtotal);
 					}
-				}
-				return $doc->saveXML(); // return serialized XML as a string
+				}				
 			}
-			return ""; // return empty cart if not exists
+			return $doc->saveXML(); // return serialized XML as a string
 		}	
 	}
 ?>

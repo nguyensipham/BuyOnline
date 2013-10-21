@@ -3,40 +3,40 @@
 // cart module
 var cart = function(){
 	//private members
-	var addOneToCart = function(itemId, successCallback, errorCallback){
+	var addOneToCart = function(itemId, callback){
 							var method = "GET",
 								sendTo = "manageCart.php", 
-								params = "?action=add&itemId=" + itemId, 
+								params = "?action=add&itemId=" + encodeURIComponent(itemId), 
 								body = null;
-							dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+							dataService.sendRequest(method, sendTo, params, body, callback);
 						},
-		removeFromCart = function(itemId, successCallback, errorCallback){
+		removeFromCart = function(itemId, callback){
 							var method = "GET",
 								sendTo = "manageCart.php", 
-								params = "?action=delete&itemId=" + itemId, 
+								params = "?action=delete&itemId=" + encodeURIComponent(itemId), 
 								body = null;
-							dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+							dataService.sendRequest(method, sendTo, params, body, callback);
 						},
-		confirmPurchase = function(successCallback, errorCallback){
+		confirmPurchase = function(callback){
 							var method = "GET",
 								sendTo = "manageCart.php", 
 								params = "?action=confirm", 
 								body = null;
-							dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+							dataService.sendRequest(method, sendTo, params, body, callback);
 						},
-		cancelPurchase = function(successCallback, errorCallback){
+		cancelPurchase = function(callback){
 							var method = "GET",
 								sendTo = "manageCart.php", 
 								params = "?action=cancel", 
 								body = null;
-							dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+							dataService.sendRequest(method, sendTo, params, body, callback);
 						},
-		getCart = function(successCallback, errorCallback){
+		getCart = function(callback){
 							var method = "GET",
 								sendTo = "manageCart.php", 
 								params = "?action=get", 
 								body = null;
-							dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+							dataService.sendRequest(method, sendTo, params, body, callback);
 						};
 						
 	//public members
@@ -68,25 +68,25 @@ var buying = function(){
 		// get existing cart from server
 		getExistingCart = function(){
 			stopCatalogInterval();						
-			cart.getCart(showCart, showErrorText);						
+			cart.getCart(showCart);						
 		},
 		
 		// remove an item from cart
 		removeFromCart = function(itemId){						
 			stopCatalogInterval();						
-			cart.removeFromCart(itemId, showCart, showErrorText);
+			cart.removeFromCart(itemId, showCart);
 		},
 		
 		// confirm purchase
 		confirmPurchase = function(){
 			stopCatalogInterval();						
-			cart.confirmPurchase(showSuccessText, showErrorText);								
+			cart.confirmPurchase(purchaseCallback);								
 		},
 		
 		// cancel purchase
 		cancelPurchase = function(){
 			stopCatalogInterval();
-			cart.cancelPurchase(showSuccessText, showErrorText);
+			cart.cancelPurchase(purchaseCallback);
 		},
 		
 		// clear message from info div
@@ -99,18 +99,9 @@ var buying = function(){
 			document.getElementById("cart").innerHTML = "";	
 		},
 		
-		// display error message
-		showErrorText = function(responseText){
-			document.getElementById('info').className = "span12 text-error";
-			document.getElementById('info').innerHTML = responseText;
-			enableCatalogInterval();
-		},
-
-		// display success message
-		showSuccessText = function(responseText){
-			document.getElementById('info').className = "span12 text-success";
-			document.getElementById('info').innerHTML = responseText;
-			enableCatalogInterval();						
+		// display purchase message
+		purchaseCallback = function(xml){
+			message.showSuccessMessage(xml);						
 			clearCart();// clear the shopping cart
 			updateCatalog();// refresh the catalog
 		},				
@@ -118,102 +109,37 @@ var buying = function(){
 		// add an item to cart
 		addOneToCart = function(itemId){
 			stopCatalogInterval();						
-			cart.addOneToCart(itemId, showCart, showErrorText);						
+			cart.addOneToCart(itemId, showCart);						
 		},					
 
 		// display the cart based on the XML data received from the server
-		showCart = function(responseXML){					
-			if (responseXML != null && responseXML != ""){
-				var items = responseXML.getElementsByTagName("item");																		
-				var table = "<h4>Shopping Cart</h4><table class='table table-bordered cart'><tr><th>Item Number</th><th>Price</th><th>Quantity</th><th>Remove</th></tr>";						
-				var itemId, itemPrice, itemQty, totalCost = 0;
-				
-				if (window.ActiveXObject) // IE uses "text"
-				{ 
-					for (i=0; i<items.length; i++){ // this will handle any number of items in the cart
-						itemId = items[i].childNodes[0].text;
-						itemPrice = items[i].childNodes[1].text;
-						itemQty = items[i].childNodes[2].text;
-						table += "<tr><td>" + itemId + "</td>"; 
-						table += "<td>" + itemPrice + "</td>"; 
-						table += "<td>" + itemQty + "</td>"; 
-						table += "<td><button class='btn' onclick='buying.removeFromCart(" + itemId + ")'>Remove from cart</button></td></tr>"; // Remove from cart button				
-						totalCost += itemPrice * itemQty;
-					}	
-				}
-				else
-				{ 
-					for (i=0; i<items.length; i++){ // this will handle any number of items in the cart
-						itemId = items[i].childNodes[0].textContent;
-						itemPrice = items[i].childNodes[1].textContent;
-						itemQty = items[i].childNodes[2].textContent;
-						table += "<tr><td>" + itemId + "</td>"; 
-						table += "<td>" + itemPrice + "</td>"; 
-						table += "<td>" + itemQty + "</td>"; 
-						table += "<td class='text-center'><button class='btn' onclick='buying.removeFromCart(" + itemId + ")'>Remove from cart</button></td></tr>"; // Remove from cart button				
-						totalCost += itemPrice * itemQty;
-					}
-				}					
-				
-				table += "<tr><td colspan='3' class='total-cost-text'>Total Cost:</td><td class='total-cost-value'>$" + totalCost + "</td></tr>";									
-				table += "<tr><td colspan='4' class='cart-btn'><span class='span6 text-center'><button class='btn' onclick='buying.confirmPurchase()'>Confirm Purchase</button></span>" +
-						 "<span class='span6 text-center'><button class='btn' onclick='buying.cancelPurchase()'>Cancel Purchase</button></span></td></tr>";
-				table += "</table>";							
-				table += "<div class='span12'></div>";
-										
-				document.getElementById("cart").innerHTML = table;
-			}
-			updateCatalog();
-			enableCatalogInterval();
+		showCart = function(xml){			
+			var xslFile = "cart.xsl";
+			var elementId = "cart";
+			xsl.transformXMLData(xml, xslFile, elementId);
 			
-			// clear all info
-			clearInfor();
+			updateCatalog();			
+			clearInfor();				
 		},
 						
 
 		// update catalog list
 		updateCatalog = function(){
-			var	method = "GET",
+			stopCatalogInterval();
+			var	method = "POST", //use POST to prevent IE caching
 				sendTo = "catalog.php", 
 				params = "", 
 				body = "";
-			dataService.sendRequest(method, sendTo, params, body, catalogCallback, showErrorText);
+			dataService.sendRequest(method, sendTo, params, body, catalogCallback);
 		},
 
 		//call back function to display the catalog list after receiving XML data from server
-		catalogCallback = function(responseXML){
-			if (responseXML != null && responseXML != ""){
-				var items = responseXML.getElementsByTagName("item");
-				var table = "<table class='table'><tr><th>Item Number</th><th>Name</th><th>Description</th><th>Price</th><th>Quantity</th><th>Add</th></tr>";
-				
-				if (window.ActiveXObject) // IE uses "text"
-				{ 
-					for (i=0; i<items.length; i++){ // this will handle any number of items in the catalog
-						table += "<tr><td>" + items[i].childNodes[0].text + "</td>"; // item number
-						table += "<td>" + items[i].childNodes[1].text + "</td>"; // name
-						table += "<td>" + items[i].childNodes[4].text.substring(0,20) + "</td>"; // description - only 20 characters
-						table += "<td>" + items[i].childNodes[2].text + "</td>"; // price
-						table += "<td>" + items[i].childNodes[3].text + "</td>"; // quantity
-						table += "<td><button class='btn' onclick='buying.addOneToCart(" + items[i].childNodes[0].text + ")'>Add one to cart</button></td></tr>"; // Add one to cart button					
-					}
-				}
-				else
-				{ 
-					for (i=0; i<items.length; i++){ // this will handle any number of items in the catalog
-						table += "<tr><td>" + items[i].childNodes[0].textContent + "</td>"; // item number
-						table += "<td>" + items[i].childNodes[1].textContent + "</td>"; // name
-						table += "<td>" + items[i].childNodes[4].textContent.substring(0,20) + "</td>"; // description - only 20 characters
-						table += "<td>" + items[i].childNodes[2].textContent + "</td>"; // price
-						table += "<td>" + items[i].childNodes[3].textContent + "</td>"; // quantity
-						table += "<td><button class='btn' onclick='buying.addOneToCart(" + items[i].childNodes[0].textContent + ")'>Add one to cart</button></td></tr>"; // Add one to cart button					
-					}		
-				}
-														
-				table += "</table>";
-				table += "<br>Total: " + items.length + " item(s)";
-				
-				document.getElementById('catalog').innerHTML = table;
-			}
+		catalogCallback = function(xml){			
+			var xslFile = "Catalog.xsl";
+			var elementId = "catalog";
+			xsl.transformXMLData(xml, xslFile, elementId);
+			
+			enableCatalogInterval();
 		};
 				
 	
@@ -223,15 +149,21 @@ var buying = function(){
 		confirmPurchase: confirmPurchase,
 		cancelPurchase: cancelPurchase,
 		addOneToCart: addOneToCart,
-		getExistingCart: getExistingCart
+		getExistingCart: getExistingCart,
+		enableCatalogInterval: enableCatalogInterval
 	}
 }();
 
 
 
 //override the loginDetailCallback method to call the getExistingCart() method afterwards
-login.loginDetailCallback = function(responseText){
-	Login.prototype.loginDetailCallback.call(this, responseText); // call the base method
+login.loginDetailCallback = function(xml){
+	Login.prototype.loginDetailCallback.call(this, xml); // call the base method
 	buying.getExistingCart();
 }		
 
+//override the showErrorMessage method to call the enableCatalogInterval() method afterwards
+message.showErrorMessage = function(status, xml){
+	Message.prototype.showErrorMessage.call(this, status, xml); // call the base method
+	buying.enableCatalogInterval();
+}

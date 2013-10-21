@@ -9,11 +9,11 @@ var logout = function(){
 				params = "", 
 				body = "", 
 				callback = logoutCallback;
-			dataService.sendRequest(method, sendTo, params, body, callback, callback);
+			dataService.sendRequest(method, sendTo, params, body, callback);
 		},
 
-		logoutCallback = function(responseText){								
-			document.getElementById('info').innerHTML = responseText;
+		logoutCallback = function(xml){		
+			message.showSuccessMessage(xml);
 		};
 		
 	//public members

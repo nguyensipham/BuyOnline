@@ -17,9 +17,10 @@
 	$HTML = "";
 	
 	session_start();	
-	
+	header("Content-type: text/xml");
 	if (!isset($_SESSION['managerid'])){ // Check authorization for manager logins only
 		header('HTTP/1.0 401 Unauthorized');
+		$HTML = "Authorization required.";
 	}
 	else {
 	
@@ -27,16 +28,16 @@
 		if (isset($_POST["name"])) {
 			$name = $_POST["name"];
 			if (strcmp($_POST["name"],"") == 0)
-				$errMsg .= "Item Name is required!<br/>";
+				$errMsg .= "Item Name is required. ";
 		}
 		
 		// Validate price
 		if (isset($_POST["price"])) {
 			$price = $_POST["price"];
 			if (strcmp($price,"") == 0)
-				$errMsg .= "Item Price is required!<br/>";
+				$errMsg .= "Item Price is required. ";
 			else if (!is_numeric($price)) // check numeric values
-				$errMsg .= "Invalid Item Price numeric value!<br/>";
+				$errMsg .= "Invalid Item Price numeric value. ";
 			else if (floatval($price) < 0) 
 				$errMsg .= "Item Price must be greater than or equal to zero!<br/>";
 		}
@@ -45,25 +46,24 @@
 		if (isset($_POST["quantity"])) {
 			$quantity = $_POST["quantity"];
 			if (strcmp($quantity,"") == 0)
-				$errMsg .= "Item Quantity is required!<br/>";			
+				$errMsg .= "Item Quantity is required. ";			
 			else if (!is_numeric($quantity)) // check numeric values
-				$errMsg .= "Item Quantity must be a greater than or equal to zero integer value!<br/>";
+				$errMsg .= "Item Quantity must be a greater than or equal to zero integer value. ";
 			else if (intval($quantity) != floatval($quantity)) // check integer values
-				$errMsg .= "Item Quantity must be an integer value!<br/>";
+				$errMsg .= "Item Quantity must be an integer value. ";
 			else if (intval($quantity) < 0) // check not negative values
-				$errMsg .= "Item Quantity must be greater than or equal to zero!<br/>";
+				$errMsg .= "Item Quantity must be greater than or equal to zero. ";
 		}
 		
 		// Validate description
 		if (isset($_POST["description"])) {
 			$description = $_POST["description"];
 			if (strcmp($_POST["description"],"") == 0)
-				$errMsg .= "Item Description is required!<br/>";
+				$errMsg .= "Item Description is required. ";
 		}
 		
-
-		
-		$HTML = "<p class='text-error'>" . $errMsg . "</p>";
+		header('HTTP/1.0 400 Bad Request');
+		$HTML = $errMsg;
 		if (isset($_POST["name"]) && isset($_POST['price']) && isset($_POST['quantity']) && isset($_POST['description']) && (strlen($errMsg) <= 0)) {	
 			//initialize goods.xml connection
 			goodsXmlInit();		
@@ -88,10 +88,10 @@
 			
 			// create child nodes for item node
 			$itemIdElem = $dom->createElement("itemid", $itemId);
-			$nameElem = $dom->createElement("name", $name);
+			$nameElem = $dom->createElement("name", htmlentities($name));
 			$priceElem = $dom->createElement("price", floatval($price));
 			$quantityElem = $dom->createElement("quantity", intval($quantity));
-			$descriptionElem = $dom->createElement("description", $description);
+			$descriptionElem = $dom->createElement("description", htmlentities($description));
 			$qtyOnHoldElem = $dom->createElement("qtyOnHold", $qtyOnHold);
 			$qtySoldElem = $dom->createElement("qtySold", $qtySold);
 			
@@ -113,13 +113,14 @@
 			// save the xml file
 			if ($dom->save($goodsXmlFileName)){
 				//save succeeds
-				$HTML = "<p class='text-success'>The item has been listed in the system, and the item number is: $itemId</p>";
+				header('HTTP/1.0 200 OK');
+				$HTML = "The item has been listed in the system, and the item number is: $itemId";
 			} else {
 				//save fails
-				$HTML = "<p class='text-error'>Error while saving XML file</p>";
-			}
-			
+				header('HTTP/1.0 500 Internal Server Error');
+				$HTML = "Error while saving XML file";
+			}			
 		}		
 	}
-	echo $HTML;
+	echo message($HTML);
 ?>

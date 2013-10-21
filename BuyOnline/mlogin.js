@@ -4,23 +4,19 @@
 var managerLogin = function(){
 	//private members
 	var	login = function(){
-			var managerId = document.getElementById("managerId").value,
-				password = document.getElementById("password").value,
+			var managerId = encodeURIComponent(document.getElementById("managerId").value),
+				password = encodeURIComponent(document.getElementById("password").value),
 				method = "POST",
 				sendTo = "mlogin.php", 
 				params = "", 
 				body = "managerId=" + managerId + "&password=" + password;
-			dataService.sendRequest(method, sendTo, params, body, successCallback, errorCallback);
+			dataService.sendRequest(method, sendTo, params, body, callback);
 		},
 
-		successCallback = function(responseText){						
-			document.getElementById('info').innerHTML = "<p class='text-success'>Login succeeded. You can now <a href='listing.htm'>list items</a> or <a href='processing.htm'>process the sold items</a>.</p>";
-			getLoginDetail();
-		},
-
-		errorCallback = function(responseText){
-			document.getElementById('info').innerHTML = "<p class='text-error'>" + responseText + "</p>";
-			getLoginDetail();
+		callback = function(xml){	
+			var msg = xmlData.getMessage(xml);			
+			document.getElementById('info').innerHTML = "<p class='text-success'>Login succeeded. You can now <a href='listing.htm'>list items</a> or <a href='processing.htm'>process the sold items</a>.</p>";			
+			document.getElementById("loginDetail").innerHTML = '<a href="logout.htm">Log out</a>';			
 		};
 		
 	//public members

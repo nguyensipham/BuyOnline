@@ -19,45 +19,46 @@
 	if (isset($_POST["firstname"])) {
 		$firstname = $_POST["firstname"];
 		if (strcmp($_POST["firstname"],"") == 0)
-			$errMsg .= "First name is required!<br/>";
+			$errMsg .= "First name is required. ";
 	}
 	
 	// Validate last name
 	if (isset($_POST["lastname"])) {
 		$lastname = $_POST["lastname"];
 		if (strcmp($_POST["lastname"],"") == 0)
-			$errMsg .= "Last name is required!<br/>";
+			$errMsg .= "Last name is required. ";
 	}
 		
 	// Validate email
 	if (isset($_POST['email'])){	
 		$email = $_POST['email'];
 		if (strcmp($_POST["email"],"") == 0)
-			$errMsg .= "Email address is required!<br/>";
+			$errMsg .= "Email address is required. ";
 		else if (!isEmail($_POST['email']))
-			$errMsg .= "Invalid email address!<br/>";
+			$errMsg .= "Invalid email address. ";
 	}		
 	
 	// Validate Phone
 	if (isset($_POST['phone'])){
 		$phone = $_POST['phone'];	
 		if (strcmp($_POST["phone"],"") != 0 && !isValidPhone($_POST['phone']))			
-			$errMsg .= "Invalid Phone Number!<br/>";
+			$errMsg .= "Invalid Phone Number. ";
 	} 	
 	
 	// Validate password
 	if (isset($_POST['password'])) {
 		if (strcmp($_POST["password"],"") == 0)
-			$errMsg .= "Password is required!<br/>";
+			$errMsg .= "Password is required. ";
 		else if (isset($_POST['passwordAgain']))
 			if (strcmp($_POST["passwordAgain"],"") == 0)
-				$errMsg .= "Password (again) is required!<br/>";
+				$errMsg .= "Password (again) is required. ";
 			else if (!(strcmp($_POST['password'], $_POST['passwordAgain']) == 0))
-				$errMsg .= "Password and Password (again) do not match!<br/>";
+				$errMsg .= "Password and Password (again) do not match. ";
 			else
 				$password = $_POST['password'];
 	} 
 	
+	header("Content-type: text/xml");
 	if ($errMsg != ""){
 		header('HTTP/1.0 400 Bad Request');
 		$HTML = $errMsg;
@@ -71,7 +72,7 @@
 		$emailLookup = $xml->xpath("//customer[email='$email']/email/text()");
 		if ($emailLookup != null){ // customer email already exists
 			header('HTTP/1.0 409 Conflict');
-			$HTML = "Email already exists!";
+			$HTML = "Email already exists.";
 		} else { // customer email does not exist, save the new customer
 					
 			$custId = 1; // initialize the first customer id as 1
@@ -91,11 +92,11 @@
 			
 			// create child nodes for customer node
 			$custIdElem = $dom->createElement("custid", $custId);
-			$firstNameElem = $dom->createElement("firstname", $firstname);
-			$lastNameElem = $dom->createElement("lastname", $lastname);
-			$emailElem = $dom->createElement("email", $email);
+			$firstNameElem = $dom->createElement("firstname", htmlentities($firstname));
+			$lastNameElem = $dom->createElement("lastname", htmlentities($lastname));
+			$emailElem = $dom->createElement("email", htmlentities($email));
 			$phoneElem = $dom->createElement("phone", $phone);
-			$passwordElem = $dom->createElement("password", $password);
+			$passwordElem = $dom->createElement("password", htmlentities($password));
 			
 			// add child nodes to customer node
 			$custNodeElem->appendChild($custIdElem);
@@ -122,6 +123,6 @@
 			}
 		}
 	}
-	echo $HTML;
+	echo message($HTML);
 ?>				
 	
